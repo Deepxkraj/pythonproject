@@ -3,11 +3,9 @@ import tkinter as tk
 import csv
 import os
 
-# Database connection and setup
 conn = sqlite3.connect('employee_management.db')
 c = conn.cursor()
 
-# Create tables if they do not exist
 c.execute('''CREATE TABLE IF NOT EXISTS employees (
         emp_id INTEGER PRIMARY KEY,
         name TEXT NOT NULL,
@@ -18,7 +16,6 @@ c.execute('''CREATE TABLE IF NOT EXISTS employees (
 ''')
 conn.commit()
 
-# Database Functions
 def add_employee(emp_id, name, department, role, salary):
     try:
         c.execute("INSERT INTO employees (emp_id, name, department, role, salary) VALUES (?, ?, ?, ?, ?)",
@@ -72,25 +69,21 @@ def update_employee_salary_by_name(name, new_salary):
     conn.commit()
     display_message(f"Updated salary of Employee(s) with name '{name}' to ${new_salary}")
 
-# Export to CSV and open in Excel
 def export_to_csv():
     c.execute("SELECT * FROM employees")
     results = c.fetchall()
     
-    # Create CSV file
     with open('employee_data.csv', 'w', newline='') as file:
         writer = csv.writer(file)
         writer.writerow(["Employee ID", "Name", "Department", "Role", "Salary"])
         writer.writerows(results)
-    
-    # Open CSV file in Excel
+            
     try:
-        os.startfile('employee_data.csv')  # Windows only
+        os.startfile('employee_data.csv')  
         display_message("Employee data exported to 'employee_data.csv' and opened in Excel.")
     except Exception as e:
         display_message(f"Failed to open in Excel. Error: {str(e)}")
 
-# GUI Functions
 def display_message(message):
     display_area.config(state='normal')
     display_area.delete(1.0, tk.END)
@@ -106,20 +99,16 @@ def admin_menu():
     admin_window.title("Employee Management System")
     admin_window.geometry("800x400")
 
-    # Left panel for buttons
     left_frame = tk.Frame(admin_window)
     left_frame.pack(side="left", fill="y", padx=10, pady=10)
 
-    # Right panel for displaying results
     right_frame = tk.Frame(admin_window)
     right_frame.pack(side="right", expand=True, fill="both", padx=10, pady=10)
 
-    # Display Area for Messages and Results
     global display_area
     display_area = tk.Text(right_frame, wrap="word", state="disabled")
     display_area.pack(expand=True, fill="both")
 
-    # Input fields
     emp_id_entry = tk.Entry(left_frame)
     name_entry = tk.Entry(left_frame)
     department_entry = tk.Entry(left_frame)
@@ -131,7 +120,6 @@ def admin_menu():
     update_salary_by_name_entry = tk.Entry(left_frame)
     update_salary_by_id_entry = tk.Entry(left_frame)
 
-    # Button Commands
     def add_employee_cmd():
         emp_id = int(emp_id_entry.get())
         name = name_entry.get()
@@ -174,7 +162,6 @@ def admin_menu():
         update_employee_salary_by_name(name, new_salary)
         reset_fields(update_salary_by_name_entry, update_salary_entry)
 
-    # Layout on Left Side
     tk.Label(left_frame, text="Employee ID:").pack()
     emp_id_entry.pack()
     tk.Label(left_frame, text="Name:").pack()
@@ -209,19 +196,16 @@ def admin_menu():
     update_salary_entry.pack()
     tk.Button(left_frame, text="Update Salary by Name", command=update_salary_by_name_cmd).pack(pady=5)
 
-    # Display All Employees Button at the End
     tk.Button(left_frame, text="Display All Employees", command=display_all_cmd).pack(pady=10)
 
-    # Detailed View Button
     tk.Button(left_frame, text="Detailed View", command=export_to_csv).pack(pady=10)
 
-# Main Menu
 def main_menu():
     main_window = tk.Tk()
     main_window.title("Employee Management System")
     main_window.geometry("400x200")
 
-    def admin_login_cmd():
+    def admin_login_cmd():        
         admin_menu()
 
     tk.Label(main_window, text="Welcome to Employee Management System").pack(pady=10)
